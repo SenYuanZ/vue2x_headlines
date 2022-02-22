@@ -99,8 +99,12 @@ export default {
       // 3. 提交表单请求
       try {
         const { data } = await login(this.user)
+        // 将后端返回的登入状态(token数据) 保存到vuex容器中
         this.$store.commit('setUser', data.data)
+        // 处理响应结果
         this.$toast.success('登入成功')
+        // 登入成功，跳转页面
+        this.$router.back() // 先用这种方式 不太好
       } catch (err) {
         if (err.response.status === 400) {
           this.$toast.fail('手机号或验证码')

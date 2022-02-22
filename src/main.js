@@ -8,6 +8,9 @@ import Vant from 'vant'
 // 加载vant全局样式
 import 'vant/lib/index.css'
 
+// 自动设置REM 基准值（html 标签字体大小） 导入rem适配
+import 'amfe-flexible'
+
 // 加载全局样式
 import './style/index.less'
 
