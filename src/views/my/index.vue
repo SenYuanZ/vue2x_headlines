@@ -46,7 +46,7 @@
     <!-- 未登入状态 -->
     <div v-else class="not-login">
       <div class="mobile" @click="$router.push('/login')">
-        <img src="./mobile.png" alt="" />
+        <img src="~@/assets/mobile.png" alt="" />
       </div>
       <div class="text">登入 / 注册</div>
     </div>
@@ -116,7 +116,7 @@ export default {
 <style lang="less" scoped>
 .my-container {
   .my-info {
-    background: url('./banner.png') no-repeat;
+    background: url('~@/assets/banner.png') no-repeat;
     background-size: cover;
     .base-info {
       box-sizing: border-box;
@@ -166,7 +166,7 @@ export default {
 
   .not-login {
     height: 180px;
-    background: url('./banner.png') no-repeat;
+    background: url('~@/assets/banner.png') no-repeat;
     background-size: cover;
     display: flex;
     flex-direction: column;

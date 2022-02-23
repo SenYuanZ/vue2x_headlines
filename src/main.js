@@ -14,6 +14,8 @@ import 'amfe-flexible'
 // 加载全局样式
 import './style/index.less'
 
+import './utils/dayjs'
+
 Vue.config.productionTip = false
 // 注册使用vant 组件库
 Vue.use(Vant)
