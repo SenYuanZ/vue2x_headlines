@@ -16,7 +16,7 @@
 
     <!-- 文章频道列表区域 -->
     <!-- 标签页组件有一个功能，只有你第一次查看标签页的时候才会渲染里面内容 -->
-    <van-tabs v-model="active">
+    <van-tabs class="channel-tabs" v-model="active">
       <van-tab
         v-for="channel in channels"
         :title="channel.name"
@@ -75,6 +75,18 @@ export default {
   }
   .van-button__text {
     font-size: 14px;
+  }
+  .channel-tabs {
+    /deep/ .van-tab {
+      border-right: 1px solid #edeff3;
+      border-bottom: 1px solid #edeff3;
+    }
+    /deep/ .van-tabs__line {
+      width: 15px;
+      height: 3px;
+      bottom: 20px;
+      background: #3296fa;
+    }
   }
 }
 </style>

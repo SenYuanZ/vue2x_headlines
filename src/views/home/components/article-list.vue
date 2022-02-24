@@ -103,21 +103,25 @@ export default {
     // 下拉刷新事件
     async onRefresh () {
       // 下拉刷新，组件自己就会展示 loading 状态
+      try {
+        // 1. 请求获取数据
+        const { data: res } = await getArticles({
+          channel_id: this.channel.id,
+          timestamp: Date.now()
+        })
 
-      // 1. 请求获取数据
-      const { data: res } = await getArticles({
-        channel_id: this.channel.id,
-        timestamp: Date.now()
-      })
+        // 2. 把数据放到数据列表中 （往顶部追加）
+        const { results } = res.data
+        this.articleslist.unshift(...results)
 
-      // 2. 把数据放到数据列表中 （往顶部追加）
-      const { results } = res.data
-      this.articleslist.unshift(...results)
+        // 3. 关闭刷新的状态 loading
+        this.isRefreshLoading = false
 
-      // 3. 关闭刷新的状态 loading
-      this.isRefreshLoading = false
-
-      this.$toast(`更新了${results.length}条数据`)
+        this.$toast(`更新了${results.length}条数据`)
+      } catch (err) {
+        this.$toast('更新数据失败')
+        this.isRefreshLoading = false
+      }
     }
   }
 }
