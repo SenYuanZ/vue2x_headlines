@@ -25,24 +25,60 @@
         <!-- 文章列表 -->
         <ArticleList :channel="channel" />
       </van-tab>
+      <!-- 汉堡按钮定位了把列表最后的位置给挡住了 -->
+      <!-- 解决办法L:就是再这里添加一个占位元素 -->
+      <div slot="nav-right" class="wap-nav-placeholder"></div>
+      <div
+        slot="nav-right"
+        class="wap-nav-warp"
+        @click="isChannelEditShow = true"
+      >
+        <van-icon name="wap-nav" />
+      </div>
     </van-tabs>
+
+    <!-- 频道弹出层 -->
+    <van-popup
+      v-model="isChannelEditShow"
+      position="bottom"
+      class="channel-edit-popup"
+      closeable
+      close-icon-position="top-left"
+      get-container="body"
+      :style="{ height: '100%' }"
+    >
+      <!-- 频道封装成一个组件 -->
+      <!--
+        模板中的 $event 表示事件参数
+       -->
+      <ChannelEdit
+        :UserChannels="channels"
+        :active="active"
+        @close="isChannelEditShow = false"
+        @update-active="active = $event"
+      ></ChannelEdit>
+    </van-popup>
   </div>
 </template>
 
 <script>
 import { getUserChannels } from '@/api/user'
 import ArticleList from './components/article-list.vue'
+import ChannelEdit from '@/components/channel-edit.vue'
 export default {
   name: 'HomeIndex',
   components: {
-    ArticleList
+    ArticleList,
+    ChannelEdit
   },
   data () {
     return {
       // 控制呗激活的标签
       active: 0,
       // 频道列表
-      channels: []
+      channels: [],
+      // 控制编辑频道的显示状态
+      isChannelEditShow: true
     }
   },
   created () {
@@ -54,6 +90,10 @@ export default {
       const { data: res } = await getUserChannels()
       this.channels = res.data.channels
     }
+    // 更新修改的频道
+    // onUpdateActive (index) {
+    //   this.active = index
+    // }
   }
 }
 </script>
@@ -69,10 +109,13 @@ export default {
     background: #5babfb;
     border: none;
   }
-  .van-icon {
-    color: white;
-    font-size: 16px;
+  .page-nav-bar {
+    .van-icon {
+      color: white;
+      font-size: 16px;
+    }
   }
+
   .van-button__text {
     font-size: 14px;
   }
@@ -86,6 +129,38 @@ export default {
       height: 3px;
       bottom: 20px;
       background: #3296fa;
+    }
+  }
+  /deep/ .van-tab {
+    padding: 0 30px;
+  }
+  /* 占位符 */
+  .wap-nav-placeholder {
+    width: 20px;
+    flex-shrink: 0;
+  }
+  .wap-nav-warp {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    right: 0;
+    height: 44px;
+    line-height: 44px;
+    background-color: #fff;
+    opacity: 0.9;
+    .van-icon {
+      font-size: 24px;
+    }
+    &::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1px;
+      height: 43px;
+      background: url('~@/assets/gradient-gray-line.png');
+      background-size: contain;
     }
   }
 }
