@@ -5,10 +5,10 @@
       <div slot="title" class="channel-title">我的频道</div>
       <!-- 编辑按钮 -->
       <van-button
-        type="danger"
+        type="info"
         plain
         round
-        size="mini"
+        size="small"
         @click="isEdit = !isEdit"
         >{{ isEdit ? '完成' : '编辑' }}</van-button
       >
@@ -24,7 +24,7 @@
         v-for="(channel, index) in UserChannels"
         :key="index"
         :text="channel.name"
-        @click="onUserChannelClick(index)"
+        @click="onUserChannelClick(channel, index)"
       />
     </van-grid>
 
@@ -45,7 +45,13 @@
 </template>
 
 <script>
-import { getAllChannels } from '@/api/channel.js'
+import {
+  getAllChannels,
+  addUserChannel,
+  deleteUserChannel
+} from '@/api/channel.js'
+import { setItem } from '@/utils/storage'
+import { mapState } from 'vuex'
 export default {
   name: 'ChannelEdit',
   props: {
@@ -69,48 +75,8 @@ export default {
   created () {
     this.loadAllChannels()
   },
-  methods: {
-    // 获取所有频道标签
-    async loadAllChannels () {
-      const { data: res } = await getAllChannels()
-      this.allChannels = res.data.channels
-    },
-    // 频道推荐添加到我的频道事件
-    onAdd (channel) {
-      this.UserChannels.push(channel)
-
-      //  TODO：数据持久化
-    },
-    // 删除我的频道标签事件
-    onUserChannelClick (index) {
-      if (this.isEdit && index !== 0) {
-        // 编辑状态：删除频道
-        this.deleteChannel(index)
-      } else {
-        // 非编辑状态，切换频道
-        this.switchChannel(index)
-      }
-    },
-    // 封装删除频道逻辑
-    deleteChannel (index) {
-      // 如果删除的是当前激活频道之前的频道
-      if (index <= this.active) {
-        // 更新激活频道的索引
-        this.$emit('update-active', this.active - 1)
-      }
-      this.UserChannels.splice(index, 1)
-
-      // 数据持久化
-    },
-    // 封装切换频道逻辑
-    switchChannel (index) {
-      // 切换频道
-      this.$emit('update-active', index)
-      // 关闭弹出层
-      this.$emit('close')
-    }
-  },
   computed: {
+    ...mapState(['user']),
     // 推荐的频道列表
     // 计算属性会观测内部依赖数据的变化而重新求值
     recommendChannels () {
@@ -125,6 +91,63 @@ export default {
           return userChannel.id === channel.id
         })
       })
+    }
+  },
+  methods: {
+    // 获取所有频道标签
+    async loadAllChannels () {
+      const { data: res } = await getAllChannels()
+      this.allChannels = res.data.channels
+    },
+    // 频道推荐添加到我的频道事件
+    async onAdd (channel) {
+      this.UserChannels.push(channel)
+
+      //  TODO：数据持久化
+      if (this.user) {
+        // 登入了，数据存储到线上
+        await addUserChannel({
+          channels: [{ id: channel.id, seq: this.UserChannels.length }]
+        })
+      } else {
+        // 没有登入，数据存储到本地
+        setItem('user-channel', this.UserChannels)
+      }
+    },
+    // 删除我的频道标签事件
+    onUserChannelClick (channel, index) {
+      if (this.isEdit && index !== 0) {
+        // 编辑状态：删除频道
+        this.deleteChannel(channel, index)
+      } else {
+        // 非编辑状态，切换频道
+        this.switchChannel(index)
+      }
+    },
+    // 封装删除频道逻辑
+    async deleteChannel (channel, index) {
+      // 如果删除的是当前激活频道之前的频道
+      if (index <= this.active) {
+        // 更新激活频道的索引
+        this.$emit('update-active', this.active - 1)
+      }
+      this.UserChannels.splice(index, 1)
+
+      // 数据持久化
+      if (this.user) {
+        // 登入了，持久化到线上
+        await deleteUserChannel(channel.id)
+      } else {
+        // 没有登入,持久化到本地
+        setItem('user-channel', this.UserChannels)
+      }
+    },
+    // 封装切换频道逻辑
+    switchChannel (index) {
+      // 切换频道
+      this.$emit('update-active', index)
+      // 关闭弹出层
+      this.$emit('close')
     }
   }
 }
