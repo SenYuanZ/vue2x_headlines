@@ -8,9 +8,10 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: () => import('@/views/login/login.vue')
+    component: () => import('@/views/login/login/')
   },
   {
+    // 一级路由渲染到根组件中的 router-view
     path: '/',
     // name: 'layout'  如果父路由有默认子路由，那他的name 没有意义了
     component: () => import('@/views/layout'),
@@ -36,6 +37,11 @@ const routes = [
         component: () => import('@/views/my')
       }
     ]
+  },
+  {
+    path: '/search',
+    name: 'search',
+    component: () => import('@/views/search/')
   }
 ]
 
