@@ -27,7 +27,12 @@
     ></SearchSuggestion>
 
     <!-- 历史记录 -->
-    <SearchHistory v-else :search-histories="searchHistories"></SearchHistory>
+    <SearchHistory
+      v-else
+      :search-histories="searchHistories"
+      @search="onSearch"
+      @update-histories="searchHistories = $event"
+    ></SearchHistory>
   </div>
 </template>
 
@@ -53,6 +58,12 @@ export default {
       searchHistories: getItem('search-histories') || []
     }
   },
+  watch: {
+    // 监视搜索历史记录数据的变化，存储到本地存储
+    searchHistories () {
+      setItem('search-histories', this.searchHistories)
+    }
+  },
   methods: {
     // 点击键盘上的搜索/回车按钮后触发
     onSearch (searchText) {
@@ -71,7 +82,7 @@ export default {
 
       // 如果用户已登入，则把搜索历史记录储存到线上(没有接口)
       // 如果没有登入，则把搜索历史记录存储到本地
-      setItem('search-histories', this.searchHistories)
+      // setItem('search-histories', this.searchHistories)
 
       // 展示搜索结果
       this.isResultShow = true
