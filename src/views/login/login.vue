@@ -1,7 +1,12 @@
 <template>
   <div class="login-container">
     <!-- 导航栏 -->
-    <van-nav-bar title="登入" class="page-nav-bar" />
+    <van-nav-bar
+      title="登入/注册"
+      class="page-nav-bar"
+      left-arrow
+      @click-left="$router.back()"
+    />
     <!-- 登入的表单 -->
     <!-- 表单验证：
       1. 给van-field 组件配置 rules 验证规则
