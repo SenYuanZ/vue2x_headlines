@@ -10,41 +10,44 @@
 
     <!-- 文章正文区域 -->
     <!-- 文章标题 -->
-    <h1 class="title">{{ article.title }}</h1>
-    <!-- 文章用户信息 -->
-    <van-cell center class="user-info">
-      <div slot="title" class="name">{{ article.aut_name }}</div>
-      <van-image
-        class="avatar"
-        slot="icon"
-        round
-        fit="cover"
-        :src="article.aut_photo"
-      />
-      <div slot="label" class="pubdate">
-        {{ article.pubdate | relativeTime }}
-      </div>
-      <van-button
-        :type="article.is_followed ? 'default' : 'info'"
-        :icon="article.is_followed ? '' : 'plus'"
-        class="follow-btn"
-        round
-        size="small"
-        :loading="isFollowLoading"
-        @click="onFollow"
-        >{{ article.is_followed ? '已关注' : '关注' }}</van-button
-      >
-    </van-cell>
+    <div class="article-wrap">
+      <h1 class="title">{{ article.title }}</h1>
+      <!-- 文章用户信息 -->
+      <van-cell center class="user-info">
+        <div slot="title" class="name">{{ article.aut_name }}</div>
+        <van-image
+          class="avatar"
+          slot="icon"
+          round
+          fit="cover"
+          :src="article.aut_photo"
+        />
+        <div slot="label" class="pubdate">
+          {{ article.pubdate | relativeTime }}
+        </div>
+        <van-button
+          :type="article.is_followed ? 'default' : 'info'"
+          :icon="article.is_followed ? '' : 'plus'"
+          class="follow-btn"
+          round
+          size="small"
+          :loading="isFollowLoading"
+          @click="onFollow"
+          >{{ article.is_followed ? '已关注' : '关注' }}</van-button
+        >
+      </van-cell>
 
-    <!-- 内容区域 -->
-    <div
-      class="markdown-body"
-      v-html="article.content"
-      ref="article-content"
-    ></div>
+      <!-- 内容区域 -->
+      <div
+        class="markdown-body"
+        v-html="article.content"
+        ref="article-content"
+      ></div>
 
-    <!-- 文章评论列表 -->
-    <CommentList></CommentList>
+      <!-- 文章评论列表 -->
+      <comment-list :source="articleId"></comment-list>
+    </div>
+
     <!-- 底部区域 -->
     <div class="article-bottom">
       <van-button
@@ -204,6 +207,14 @@ export default {
 <style lang="less" scoped>
 @import url('~@/style/github-markdown.css');
 .article-container {
+  .article-wrap {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 46px;
+    bottom: 50px;
+    overflow-y: auto;
+  }
   .title {
     font-size: 20px;
     color: #3a3a3a;
