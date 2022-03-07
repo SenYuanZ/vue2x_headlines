@@ -45,7 +45,7 @@
       ></div>
 
       <!-- 文章评论列表 -->
-      <comment-list :source="articleId"></comment-list>
+      <comment-list :source="articleId" :list="commentList"></comment-list>
     </div>
 
     <!-- 底部区域 -->
@@ -56,6 +56,7 @@
         type="default"
         size="small"
         round
+        @click="isPostShow = true"
         >写评论</van-button
       >
       <van-icon
@@ -76,6 +77,14 @@
       />
       <van-icon name="share" color="#3296fa"></van-icon>
     </div>
+
+    <!-- 发布评论 -->
+    <van-popup v-model="isPostShow" position="bottom">
+      <PostComment
+        :target="articleId"
+        @post-success="onPostSuccess"
+      ></PostComment>
+    </van-popup>
   </div>
 </template>
 
@@ -90,10 +99,11 @@ import {
 import { ImagePreview } from 'vant'
 import { addFollow, deleteFollow } from '@/api/user'
 import CommentList from './components/comment-list.vue'
+import PostComment from './components/post-comment.vue'
 
 export default {
   name: 'ArticleIndex',
-  components: { CommentList },
+  components: { CommentList, PostComment },
   // 再组件中 获取动态路由参数：
   // 方式一：this.$route.params.xxx
   // 方式二：props 传参  推荐
@@ -109,7 +119,11 @@ export default {
       // 文章数据
       article: {},
       // 关注用户按钮的 loading 状态
-      isFollowLoading: false
+      isFollowLoading: false,
+      // 控制发布评论的显示状态
+      isPostShow: false,
+      // 文章评论列表
+      commentList: []
     }
   },
   created () {
@@ -199,6 +213,13 @@ export default {
       this.$toast.success(
         `${this.article.attitude === 1 ? '' : '取消'}点赞成功`
       )
+    },
+    // 接收子组件传递过来的最新的评论对象
+    onPostSuccess (comment) {
+      // 把发布成功的评论数据对象放到评论列表顶部
+      this.commentList.unshift(comment)
+      // 关闭发布评论弹出层
+      this.isPostShow = false
     }
   }
 }

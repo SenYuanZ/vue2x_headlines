@@ -28,11 +28,16 @@ export default {
     source: {
       type: [Number, String, Object],
       required: true
+    },
+    list: {
+      type: Array,
+      // 数据或对象的默认值必须通过函数返回
+      default: () => []
     }
   },
   data () {
     return {
-      list: [],
+      // list: [],
       loading: false,
       finished: false,
       // 获取下一页数据的页码
