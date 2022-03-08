@@ -55,6 +55,8 @@ export default {
         offset: this.offset,
         limit: this.limit
       })
+      // 自定义事件，把评论总数发送给父组件
+      this.$emit('update-total-count', res.data.total_count)
 
       // 2.把数据存到列表中
       const { results } = res.data

@@ -52,7 +52,6 @@ export default {
         // 为了防止超出安全整数范围所以tostring一下
         art_id: this.articleId ? this.articleId.toString() : null
       })
-      console.log(res)
       this.$emit('post-success', res.data.new_obj)
       this.$toast.success('发布成功')
       // 发布成功以后，清空文本框内容
