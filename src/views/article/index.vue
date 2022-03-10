@@ -49,10 +49,11 @@
         :source="articleId"
         :list="commentList"
         @update-total-count="totalCommentCount = $event"
+        @reply-click="onReplyclick"
       ></comment-list>
     </div>
 
-    <!-- 底部区域 -->
+    <!-- 底部区域(发送评论按钮) -->
     <div class="article-bottom">
       <van-button
         class="comment-btn"
@@ -89,6 +90,18 @@
         @post-success="onPostSuccess"
       ></PostComment>
     </van-popup>
+
+    <!-- 评论回复 -->
+    <van-popup v-model="isReplyShow" position="bottom">
+      <!-- 这里使用 v-if 的目的是让组件随着弹出层的显示经行渲染和销毁，
+      防止加载过的组件不重新渲染，导致数据不会重新加载的问题 -->
+      <comment-reply
+        v-if="isReplyShow"
+        :comment="replyComment"
+        :article-id="articleId"
+        @close="isReplyShow = false"
+      ></comment-reply>
+    </van-popup>
   </div>
 </template>
 
@@ -104,10 +117,11 @@ import { ImagePreview } from 'vant'
 import { addFollow, deleteFollow } from '@/api/user'
 import CommentList from './components/comment-list.vue'
 import PostComment from './components/post-comment.vue'
+import CommentReply from './components/comment-reply.vue'
 
 export default {
   name: 'ArticleIndex',
-  components: { CommentList, PostComment },
+  components: { CommentList, PostComment, CommentReply },
   // 再组件中 获取动态路由参数：
   // 方式一：this.$route.params.xxx
   // 方式二：props 传参  推荐
@@ -129,7 +143,11 @@ export default {
       // 文章评论列表
       commentList: [],
       // 评论总数量
-      totalCommentCount: 0
+      totalCommentCount: 0,
+      // 控制评论回复的显示状态
+      isReplyShow: false,
+      // 当前回复评论对象
+      replyComment: {}
     }
   },
   created () {
@@ -228,6 +246,12 @@ export default {
       this.totalCommentCount++
       // 关闭发布评论弹出层
       this.isPostShow = false
+    },
+    //
+    onReplyclick (comment) {
+      this.replyComment = comment
+      // 展示回复内容
+      this.isReplyShow = true
     }
   }
 }

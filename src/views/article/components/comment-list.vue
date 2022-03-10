@@ -7,10 +7,11 @@
       finished-text="没有更多了"
       @load="onLoad"
     >
-      <CommentItem
+      <comment-item
         v-for="(comment, index) in list"
         :key="index"
         :comment="comment"
+        @reply-click="$emit('reply-click', $event)"
       />
     </van-list>
   </div>
@@ -25,6 +26,8 @@ export default {
     CommentItem
   },
   props: {
+    // 如果获取文章评论，则传递文章ID
+    // 如果获取评论回复，则传递评论ID
     source: {
       type: [Number, String, Object],
       required: true
@@ -33,6 +36,12 @@ export default {
       type: Array,
       // 数据或对象的默认值必须通过函数返回
       default: () => []
+    },
+    // 获取文章评论，使用字符a
+    // 获取评论回复，使用字符c
+    type: {
+      type: String,
+      default: 'a'
     }
   },
   data () {
@@ -50,8 +59,8 @@ export default {
     async onLoad () {
       // 1.请求获取数据
       const { data: res } = await getComments({
-        type: 'a',
-        source: this.source,
+        type: this.type,
+        source: this.source.toString(),
         offset: this.offset,
         limit: this.limit
       })
