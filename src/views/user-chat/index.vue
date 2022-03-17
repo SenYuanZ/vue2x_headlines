@@ -9,12 +9,36 @@
     />
     <!-- 消息列表 -->
     <van-cell-group class="message-list" ref="message-list">
-      <van-cell
-        :title="item.msg"
+      <!-- <van-cell
+        :title="item.data.msg"
         v-for="(item, index) in messages"
         :key="index"
-      />
+      /> -->
+      <div v-for="(item, index) in messages" :key="index">
+        <!-- 小思机器人 -->
+        <van-cell class="chat-xs" v-if="item.name === 'xs'">
+          <!-- 使用 title 插槽来自定义标题 -->
+          <template #title>
+            <van-image
+              class="photo"
+              round
+              fit="cover"
+              src="https://img01.yzcdn.cn/vant/cat.jpeg"
+            />
+            <span class="custom-title">{{ item.msg }}</span>
+          </template>
+        </van-cell>
+        <!-- 我的消息 -->
+        <van-cell class="chat-my" v-else>
+          <!-- 使用 title 插槽来自定义标题 -->
+          <template #title>
+            <span class="custom-title">{{ item.msg }}</span>
+            <van-image class="photo" round fit="cover" :src="myPhoto.photo" />
+          </template>
+        </van-cell>
+      </div>
     </van-cell-group>
+
     <!-- 发送消息 -->
     <van-cell-group class="send-message-wrap">
       <van-field v-model="message" placeholder="请输入消息" :border="false" />
@@ -37,7 +61,8 @@ export default {
       // WebSocket 通信对象
       socket: null,
       // 消息列表
-      messages: getItem('chat-messages') || []
+      messages: getItem('chat-messages') || [],
+      myPhoto: getItem('UserProfile')
     }
   },
   watch: {
@@ -68,10 +93,10 @@ export default {
       console.log('断开连接')
     })
     // 监听 message 事件，接收服务端消息
-    socket.on('message', (data) => {
+    socket.on('message', ({ msg }) => {
       // 把对方发过来的消息 存放到数组中
-      this.messages.push(data)
-      console.log(data)
+      this.messages.push({ name: 'xs', msg })
+      console.log(msg)
     })
   },
   // DOM元素创建好了
@@ -93,7 +118,7 @@ export default {
       }
       this.socket.emit('message', data)
       // 把用户发出去的消息存储到数组中
-      this.messages.push(data)
+      this.messages.push({ name: 'my', msg: data.msg })
       // 清空输入框
       this.message = ''
     },
@@ -126,5 +151,32 @@ export default {
   display: flex;
   padding: 0 14px;
   align-items: center;
+}
+.message-list {
+  .photo {
+    width: 50px;
+    height: 50px;
+  }
+  .chat-xs {
+    .custom-title {
+      display: inline-block;
+      height: 30px;
+      background: #ccc;
+      font-size: 16px;
+      margin-left: 5px;
+      padding: 10px 10px;
+    }
+  }
+  .chat-my {
+    margin-top: 10px;
+    .custom-title {
+      display: inline-block;
+      height: 30px;
+      background: #ccc;
+      font-size: 16px;
+      margin-right: 5px;
+      padding: 10px 10px;
+    }
+  }
 }
 </style>

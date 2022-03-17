@@ -73,6 +73,8 @@
 <script>
 import { mapState } from 'vuex'
 import { getCurrentUser } from '@/api/user'
+import { setItem } from '@/utils/storage.js'
+
 export default {
   name: 'MyIndex',
   data () {
@@ -107,6 +109,7 @@ export default {
       const { data: res } = await getCurrentUser()
       console.log(res)
       this.currentUser = res.data
+      setItem('UserProfile', this.currentUser)
     }
   },
   computed: {
