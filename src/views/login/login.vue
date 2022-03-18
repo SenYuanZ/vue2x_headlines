@@ -108,14 +108,16 @@ export default {
         this.$store.commit('setUser', data.data)
         // 处理响应结果
         this.$toast.success('登入成功')
+
+        // 清除 layout 的缓存，然他重新渲染
+        this.$store.commit('removeCachePage', 'LayouIndex')
+
         // 登入成功，跳转页面
-        this.$router.back() // 先用这种方式 不太好
+        this.$router.push('/') // 先用这种方式 有问题
+        // this.$router.push(this.$router.query.redirect || '/')
       } catch (err) {
-        if (err.response.status === 400) {
-          this.$toast.fail('手机号或验证码')
-        } else {
-          this.$toast.fail('登入失败，请稍后重试')
-        }
+        console.log(err)
+        this.$toast.fail('登入失败，手机号或验证码错误！')
       }
     },
     // 发送手机验证码

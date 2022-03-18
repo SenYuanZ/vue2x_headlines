@@ -21,6 +21,9 @@ export default {
     return {}
   },
   created () {},
+  mounted () {
+    this.$store.commit('addCachePage', 'LayouIndex')
+  },
   methods: {}
 }
 </script>
